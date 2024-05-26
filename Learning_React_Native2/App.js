@@ -38,12 +38,12 @@ export default function App() {
 
   const DeleteData = async () => {
     console.log('Data cancelled!')
-    try{
+    try {
       await AsyncStorage.removeItem("myName")
       await AsyncStorage.removeItem("myAge")
-    } catch(err){
+    } catch (err) {
       alert(err)
-    } finally{
+    } finally {
       setName('')
       setAge('')
     }
@@ -72,15 +72,14 @@ export default function App() {
       <Text>Name: {name}, Age: {age}</Text>
 
       <View style={styles.saveButtonStyle}>
-      <Button
-        title='save'
-        onPress={() => SaveData()}
-      />
+        <Button
+          title='save'
+          onPress={() => SaveData()}
+        />
+      </View>
       <View style={styles.cancelButtonStyle}>
-      <Button title='Delete' onPress={() => DeleteData()}/>
+        <Button title='Delete' onPress={() => DeleteData()} />
       </View>
-      </View>
-
     </View> // TopMost View
   );
 }
@@ -107,13 +106,14 @@ const styles = StyleSheet.create({
     height: 50,
     width: 100,
     backgroundColor: 'darkgrey',
-    margin: 20  
+    margin: 20,
+    justifyContent: 'space-evenly'
   },
   cancelButtonStyle: {
+    flexDirection: 'column',
     height: 50,
     width: 100,
     backgroundColor: 'darkgrey',
-    marginTop: 30
   }
 }
 );
