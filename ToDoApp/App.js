@@ -52,17 +52,16 @@ export default function App() {
   }, []);
 
   // FUNCTION TO DELETE TASK
-  const deleteTask = async (index) => {
+  const deleteTask = (index) => {
+    let taskArrayCopy = [...taskArray];
+    taskArrayCopy.splice(index, 1);
     try {
-      AsyncStorage.removeItem("myTask").then((taskArrayCopy) => {
-        taskArrayCopy = [...taskArray];
-        taskArrayCopy.splice(index, 1);
-        setTaskArray(taskArrayCopy);
-      });
+      AsyncStorage.setItem("myTask", JSON.stringify(taskArrayCopy)).then(() => {
+          setTaskArray(taskArrayCopy);
+        }
+      );
     } catch (err) {
       alert(err);
-    } finally {
-      console.log('This line would always run')
     }
   };
   return (
