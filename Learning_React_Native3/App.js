@@ -8,7 +8,7 @@ const API_KEY = "d555e955dc8847d68a1cc1c1a40d527f";
 export default function App() {
 	let [loading, setLoading] = useState(true);
 	let [error, setError] = useState(); // IF FOR SOME REASON CALLING THE API FAILS
-	let [data, setData] = useState([]);
+	let [data, setData] = useState([]); // TO HOLD AND SET THE DATA FROM THE API
 
 	/*THE USE EFFECT HOOK TO MAKE SURE WE'RE ONLY CALLING THE API ONCE */
 	useEffect(() => {
