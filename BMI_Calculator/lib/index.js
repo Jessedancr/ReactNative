@@ -9,10 +9,12 @@ import {
 	Animated,
 	ScrollView,
 	Image,
+	ActivityIndicator,
 } from "react-native";
 import React, { useEffect, useRef, useState } from "react";
 import Constants from "expo-constants";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { REACT_APP_API_KEY } from "@env";
 
 export default function BmiCalculator() {
 	/* DEFINING STATE VARIABLES FOR WEIGHT, HEIGHT
@@ -25,13 +27,16 @@ export default function BmiCalculator() {
 	const [comment, setComment] = useState("");
 	const [image, setImage] = useState();
 	const [error, setError] = useState();
+	const [loading, setLoading] = useState(false);
+
+	// const API_KEY = "e1c2cbb19emshc6be6d190d03288p1e8eb7jsn8c58513b2d0d";
 
 	// API SPECIFIC CODE: ENDPOINT, KEY AND HOST
 	const url = "https://any-anime.p.rapidapi.com/v1/anime/png/1";
 	const options = {
 		method: "GET",
 		headers: {
-			"X-RapidAPI-Key": "e1c2cbb19emshc6be6d190d03288p1e8eb7jsn8c58513b2d0d",
+			"X-RapidAPI-Key": REACT_APP_API_KEY,
 			"X-RapidAPI-Host": "any-anime.p.rapidapi.com",
 		},
 	};
@@ -41,7 +46,7 @@ export default function BmiCalculator() {
 	const animatedTiming = () => {
 		Animated.timing(value.current, {
 			toValue: 1,
-			duration: 1000,
+			duration: 2500,
 			useNativeDriver: true,
 		}).start();
 	};
@@ -57,14 +62,6 @@ export default function BmiCalculator() {
 
 	useEffect(() => {
 		load();
-		try {
-			fetch(url, options)
-				.then((res) => res.json())
-				.then((result) => setImage(result.images[0]));
-		} catch (err) {
-			alert(err);
-			setError(err);
-		}
 	}, []);
 
 	const calculateBmi = async () => {
@@ -83,15 +80,11 @@ export default function BmiCalculator() {
 			setComment("Improve your balanced diet! you are underweight");
 		} else if (bmi > 18.5 && bmi <= 24.9) {
 			setComment("Congrats! you are healthy");
-			const images = image.images[0]
-			setImage(images);
 		} else if (bmi > 25 && bmi <= 30) {
 			setComment("Hit the gym! you are overweight");
 		} else {
 			setComment("Start eating healthy! You are Obese");
 		}
-
-		return callApi();
 	};
 
 	// FUNCTION TO GET OR LOAD DATA FROM ASYNC STORAGE
@@ -127,14 +120,19 @@ export default function BmiCalculator() {
 
 	// FUNCTION TO CALL API
 	const callApi = () => {
-		console.log("function to call API");
-		return (
-			<View>
-				{image && (
-					<Image source={{ uri: image }} style={{ width: 200, height: 200 }} />
-				)}
-			</View>
-		);
+		setLoading(true);
+		try {
+			fetch(url, options)
+				.then((res) => res.json())
+				.then((result) => {
+					setImage(result.images[0]);
+					setLoading(false);
+				});
+		} catch (err) {
+			alert(err);
+			setError(error);
+			setLoading(false);
+		}
 	};
 
 	const animatedTextStyle = {
@@ -170,11 +168,33 @@ export default function BmiCalculator() {
 							/>
 						</View>
 
-						<View style={styles.pokeStyle}>
+						<View style={styles.apiContainerStyle}>
 							<Animated.Text style={animatedTextStyle}>
 								BMI: {bmi}
 							</Animated.Text>
 							<Animated.Text style={animatedTextStyle}>{comment}</Animated.Text>
+							{loading ? (
+								<ActivityIndicator></ActivityIndicator>
+							) : (
+								image && (
+									<View
+										style={{
+											flexDirection: "row",
+											flexWrap:'wrap',
+											alignItems: "center",
+											width: "80%",
+											justifyContent: "space-around",
+										}}>
+										<Image
+											source={{ uri: image }}
+											style={{ width: 200, height: 180, borderRadius: 25 }}
+										/>
+										<Text style={styles.ImageTextStyle} numberOfLines={3}>
+											Here's some random Anime picture for you
+										</Text>
+									</View>
+								)
+							)}
 						</View>
 
 						<View
@@ -182,15 +202,19 @@ export default function BmiCalculator() {
 								flexDirection: "row",
 								justifyContent: "space-around",
 								width: "100%",
+								marginTop: 60,
 							}}>
 							<TouchableOpacity
-								style={styles.submitButton}
-								onPress={() => calculateBmi()}>
+								style={styles.button}
+								onPress={() => {
+									calculateBmi();
+									callApi();
+								}}>
 								<Text style={styles.textStyle}>SUBMIT</Text>
 							</TouchableOpacity>
 
 							<TouchableOpacity
-								style={styles.submitButton}
+								style={styles.button}
 								onPress={() => DeleteData()}>
 								<Text style={styles.textStyle}>DELETE</Text>
 							</TouchableOpacity>
@@ -202,6 +226,7 @@ export default function BmiCalculator() {
 	);
 }
 
+// S T Y L I N G
 const styles = StyleSheet.create({
 	container: {
 		flex: 1,
@@ -211,7 +236,7 @@ const styles = StyleSheet.create({
 	headerContainer: {
 		backgroundColor: "silver",
 		padding: 50,
-		marginVertical: 35,
+		marginVertical: 20,
 		marginHorizontal: 20,
 		borderRadius: 10.0,
 		alignItems: "center",
@@ -233,32 +258,32 @@ const styles = StyleSheet.create({
 		borderRadius: 10,
 		borderColor: "black",
 		borderWidth: 1.5,
-		width: 280,
+		width: "80%",
 	},
 	buttontext: {
 		textAlign: "center",
 		textAlignVertical: "center",
 	},
-	heightViewStyle: {
-		flexDirection: "row",
-		paddingBottom: 50,
-	},
-	pokeStyle: {
+
+	apiContainerStyle: {
 		backgroundColor: "transparent",
 		height: 200,
 		width: 330,
 		marginVertical: 10,
-
 		borderRadius: 10.0,
 		alignItems: "center",
 	},
 
-	submitButton: {
+	button: {
 		height: 50,
 		width: 150,
 		backgroundColor: "silver",
 		borderRadius: 10,
 		justifyContent: "center",
 		alignItems: "center",
+	},
+	ImageTextStyle: {
+		fontSize: 16,
+		fontWeight: "bold",
 	},
 });
