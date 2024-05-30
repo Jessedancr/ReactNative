@@ -13,6 +13,8 @@ export default function App() {
   const [name, setName] = useState('')
   const [age, setAge] = useState('')
 
+
+  // FUNCTION TO SAVE THE DATA TO ASYNC STORAGE
   const SaveData = async () => {
     console.log('data saved')
     try {
@@ -23,6 +25,8 @@ export default function App() {
     }
   }
 
+
+  // FUNCTION TO GET OR LOAD DATA FROM ASYNC STORAGE
   const load = async () => {
     try {
       let name = await AsyncStorage.getItem("myName")
@@ -36,6 +40,8 @@ export default function App() {
     }
   }
 
+
+  // FUNCTION TO DELETE DATA FROM ASYNC STORAGE
   const DeleteData = async () => {
     console.log('Data cancelled!')
     try {
