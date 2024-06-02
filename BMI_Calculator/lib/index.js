@@ -29,7 +29,7 @@ export default function BmiCalculator() {
 	const [error, setError] = useState();
 	const [loading, setLoading] = useState(false);
 
-	// const API_KEY = "e1c2cbb19emshc6be6d190d03288p1e8eb7jsn8c58513b2d0d";
+
 
 	// API SPECIFIC CODE: ENDPOINT, KEY AND HOST
 	const url = "https://any-anime.p.rapidapi.com/v1/anime/png/1";
@@ -72,6 +72,7 @@ export default function BmiCalculator() {
 		try {
 			await AsyncStorage.setItem("myHeight", height);
 			await AsyncStorage.setItem("myWeight", weight);
+
 		} catch (err) {
 			alert(err);
 		}
@@ -92,6 +93,7 @@ export default function BmiCalculator() {
 		try {
 			let height = await AsyncStorage.getItem("myHeight");
 			let weight = await AsyncStorage.getItem("myWeight");
+
 			if (height !== null && weight !== null) {
 				setHeight(height);
 				setWeight(weight);
@@ -180,7 +182,7 @@ export default function BmiCalculator() {
 									<View
 										style={{
 											flexDirection: "row",
-											flexWrap:'wrap',
+											flexWrap: 'wrap',
 											alignItems: "center",
 											width: "80%",
 											justifyContent: "space-around",
@@ -190,7 +192,7 @@ export default function BmiCalculator() {
 											style={{ width: 200, height: 180, borderRadius: 25 }}
 										/>
 										<Text style={styles.ImageTextStyle} numberOfLines={3}>
-											Here's some random Anime picture for you
+											Here's some random anime picture for you
 										</Text>
 									</View>
 								)

@@ -1,0 +1,25 @@
+{
+	"cli": {
+		"version": ">= 9.1.0"
+	},
+	"build": {
+		"development": {
+			"developmentClient": true,
+			"distribution": "internal",
+			"env": {
+				"EXPO_PUBLIC_API_URL": "e1c2cbb19emshc6be6d190d03288p1e8eb7jsn8c58513b2d0d"
+			}
+		},
+		"preview": {
+			"distribution": "internal"
+		},
+		"production": {
+			"env": {
+				"EXPO_PUBLIC_API_URL": "e1c2cbb19emshc6be6d190d03288p1e8eb7jsn8c58513b2d0d"
+			}
+		}
+	},
+	"submit": {
+		"production": {}
+	}
+}
