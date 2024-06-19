@@ -4,12 +4,15 @@ import {
 	View,
 	TouchableOpacity,
 	ImageBackground,
+	FlatList,
 } from "react-native";
 import { useTheme } from "react-native-paper";
 import { auth, signOut } from "./Firebase/Firebase_Config";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useState } from "react";
 
 export default function HomeScreen({ navigation }) {
+	const [user, setUser] = useState([]);
 	// DEFINING STYLING FOR VARIOUS COMPONENTS USING REACT NATIVE PAPER
 	const theme = useTheme();
 	const userEmailView = {
@@ -29,25 +32,42 @@ export default function HomeScreen({ navigation }) {
 		height: "10%",
 		justifyContent: "center",
 		alignItems: "center",
-		marginTop: 10,
 	};
 	const buttonStyle = {
 		height: 50,
 		width: 150,
 		backgroundColor: theme.colors.onSurface,
-		borderRadius: 10,
+		borderRadius: 30,
 		justifyContent: "center",
 		alignItems: "center",
-		marginTop: 20,
+		marginTop: "5%",
 	};
 	const logOutButtonStyle = {
 		height: 50,
 		width: 150,
 		backgroundColor: theme.colors.error,
-		borderRadius: 10,
+		borderRadius: 30,
 		justifyContent: "center",
 		alignItems: "center",
-		marginTop: "94%",
+		marginTop: "5%",
+	};
+	const gitUsersStyle = {
+		backgroundColor: theme.colors.backdrop,
+		width: "100%",
+		height: "50%",
+		borderRadius: 10,
+		marginTop: "1%",
+	};
+	const usersStyle = {
+		flexDirection: "row",
+		justifyContent: "center",
+		backgroundColor: theme.colors.inversePrimary,
+		fontSize: 18,
+		padding: 20,
+		marginTop: 24,
+		marginLeft: "20%",
+		borderRadius: 30,
+		width: "60%",
 	};
 
 	// LOG OUT FUNCTION
@@ -59,6 +79,29 @@ export default function HomeScreen({ navigation }) {
 			console.log("User logged out");
 		} catch (error) {
 			alert(error.message);
+		}
+	};
+
+	// API CALL FUNCTION
+	const getUsers = async () => {
+		try {
+			console.log("Api called");
+			const response = await fetch("https://api.github.com/users");
+			const result = await response.json()
+			user = setUser(result);
+		} catch {
+			(err) => alert(err.message);
+		}
+	};
+
+	// FUNCTION TO VIEW SPECIFIC DETAILS ABOUT A USER
+	const viewUserDetails = async (login) => {
+		try {
+			const response = await fetch(`https://api.github.com/users/${login}`);
+			const result = await response.json();
+			navigation.navigate("UserDetails", { UserDetails: result });
+		} catch {
+			(error) => alert(error.message);
 		}
 	};
 
@@ -87,9 +130,25 @@ export default function HomeScreen({ navigation }) {
 						CLICK THE 'GET' BUTTON BELOW TO FETCH SOME USERS
 					</Text>
 				</View>
-				<TouchableOpacity style={buttonStyle}>
+				<TouchableOpacity style={buttonStyle} onPress={getUsers}>
 					<Text style={styles.welcomeText}>G E T</Text>
 				</TouchableOpacity>
+				<View style={gitUsersStyle}>
+					<FlatList
+						data={user}
+						renderItem={({ item }) => (
+							<>
+								<View style={usersStyle}>
+									<TouchableOpacity onPress={() => viewUserDetails(item.login)}>
+										<Text style={{ fontWeight: "bold", fontSize: 16 }}>
+											{item.login}
+										</Text>
+									</TouchableOpacity>
+								</View>
+							</>
+						)}
+					/>
+				</View>
 
 				<TouchableOpacity style={logOutButtonStyle} onPress={logOut}>
 					<Text style={styles.welcomeText}>L O G O U T</Text>
@@ -119,4 +178,5 @@ const styles = StyleSheet.create({
 		fontWeight: "bold",
 		fontSize: 14,
 	},
+	usersText: {},
 });

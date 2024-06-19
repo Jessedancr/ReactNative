@@ -10,31 +10,39 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 // PAPER PROVIDER IMPORTS
 import { PaperProvider } from "react-native-paper";
 import { MD2DarkTheme as DefaultTheme } from "react-native-paper";
+import UserDetails from "./src/User_details";
 
-const stack = createNativeStackNavigator();
+const stack = createNativeStackNavigator(); // initializing stack navigator
 export default function App() {
 	return (
 		<PaperProvider>
-			
 			<NavigationContainer>
 				<stack.Navigator
 					screenOptions={{
-						//headerTransparent: true,
+						headerTransparent: true,
 					}}>
 					<stack.Screen
 						name="LoginScreen"
 						component={LoginScreen}
-						options={{headerShown: false}}
+						options={{ headerShown: false }}
 					/>
 					<stack.Screen
 						name="HomeScreen"
 						component={HomeScreen}
-						options={{ headerShown: false}}
+						options={{ headerShown: false }}
 					/>
 					<stack.Screen
 						name="SignUpScreen"
 						component={SignUpScreen}
-						options={{headerShown: false}}
+						options={{ headerShown: false }}
+					/>
+					<stack.Screen
+						name="UserDetails"
+						component={UserDetails}
+						options={{
+							headerBackTitle: "Back",
+							headerTintColor: DefaultTheme.colors.text,
+						}}
 					/>
 				</stack.Navigator>
 			</NavigationContainer>
