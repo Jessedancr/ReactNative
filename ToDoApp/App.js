@@ -1,4 +1,3 @@
-import { StatusBar } from "expo-status-bar";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import {
 	Keyboard,
@@ -15,28 +14,34 @@ import React, { useEffect, useState } from "react";
 import TaskTile from "./util/TaskTile";
 
 export default function App() {
-	const [task, setTask] = useState();
+	const [task, setTask] = useState("");
 	const [taskArray, setTaskArray] = useState([]);
-	let [data, setData] = useState([]);
 
 	// FUNCTION TO ADD TASK
 	const addTask = async () => {
-		//const url = "https://worldtimeapi.org/api/timezone/Africa/Lagos";
-		const timeStamp = new Date().toString();
+		const url = "https://worldtimeapi.org/api/timezone/Africa/Lagos";
 		Keyboard.dismiss();
-		console.log(timeStamp);
 		console.log(task);
+
 		try {
-			await AsyncStorage.setItem(
-				"myTask",
-				JSON.stringify([...taskArray, task]),
-			);
-      const task = [id, Date.now().toString(), text, task, timeStamp ];
-			setTaskArray([...taskArray, task]);
+			// C A L L I N G  T H E  A P I
+			const res = await fetch(url);
+			const result = await res.json(); // Parsing the result of the API call
+			const dateTime = result.datetime; // Assigning the datetime prop of the API call to a variable
+
+			const newTask = {
+				mytask: task,
+				taskTime: dateTime,
+			};
+
+			// A S Y N C  S T O R A G E
+			const updatedTaskArray = [...taskArray, newTask];
+			await AsyncStorage.setItem("myTask", JSON.stringify(updatedTaskArray));
+			setTaskArray(updatedTaskArray);
+			setTask("");
 		} catch (err) {
 			console.log(err);
 		}
-		setTask(null);
 	};
 
 	// ASYNC FUNCTION TO LOAD TASKS TO ASYNC STORAGE
@@ -72,12 +77,14 @@ export default function App() {
 		<View style={styles.container}>
 			<View style={styles.header}>
 				<Text style={styles.title}>TODAY'S TASKS</Text>
-				{/*THIS VIEW HOLDS ALL THE CURRENT TASKS*/}
-				<ScrollView style={styles.tasks}>
+				{/*THIS VIEW HOLDS ALL THE TO-DO TASKS*/}
+				<ScrollView style={styles.scrollView}>
 					{taskArray.map((item, index) => {
 						return (
 							<TouchableOpacity onPress={() => deleteTask(index)} key={index}>
-								<TaskTile task={item}></TaskTile>
+								<TaskTile
+									task={item.mytask}
+									dateTime={item.taskTime}></TaskTile>
 							</TouchableOpacity>
 						);
 					})}
@@ -116,9 +123,9 @@ const styles = StyleSheet.create({
 		fontSize: 24,
 		fontWeight: "bold",
 	},
-	tasks: {
+	scrollView: {
 		marginTop: 5.0,
-		marginBottom: 135,
+		marginBottom: 140,
 	},
 	keyboardAvoidingView: {
 		position: "absolute",
